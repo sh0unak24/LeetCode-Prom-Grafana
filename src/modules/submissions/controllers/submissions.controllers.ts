@@ -3,6 +3,7 @@ import { createSubmissionSchema } from "../validators/submissions.schema";
 import z from "zod"
 import { prisma } from "../../../lib/prisma";
 import { AuthRequest } from "../../../middleware/authenticate.middlewate";
+import { enqueueSubmission } from "../producers/submission.producer";
 
 export const createSubmission = async ( req : AuthRequest , res : Response) => {
     try{
@@ -35,19 +36,34 @@ export const createSubmission = async ( req : AuthRequest , res : Response) => {
                 userId,
                 problemId,
                 language,
-                sourceCode
+                sourceCode,
+                status : "PENDING"
             }
         });
+        //console.log("before try of qnqueue")
+        try {
+            //console.log("About to enqueue submission:", submission.id);
+            await enqueueSubmission(submission.id);
+            //console.log("Enqueued submission:", submission.id);
+          } catch (err) {
+            console.error("Failed to enqueue submission:", err);
+          }
+
+        // return res.status(201).json({
+        //     message : "Submission created successfully",
+        //     submission : {
+        //         userId  : submission.userId,
+        //         problemId : submission.problemId,
+        //         language : submission.language,
+        //         sourceCode : submission.sourceCode
+        //     }
+        // })
 
         return res.status(201).json({
             message : "Submission created successfully",
-            submission : {
-                userId  : submission.userId,
-                problemId : submission.problemId,
-                language : submission.language,
-                sourceCode : submission.sourceCode
-            }
-        })
+            submissionId: submission.id,
+            status: submission.status,
+          });
 
     }catch(err){
         console.error("[CREATE SUBMISSION ERROR]");

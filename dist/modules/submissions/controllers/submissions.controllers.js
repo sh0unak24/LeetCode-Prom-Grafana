@@ -16,6 +16,7 @@ exports.getSubmissionForUser = exports.getSubmissionByProblemId = exports.getSub
 const submissions_schema_1 = require("../validators/submissions.schema");
 const zod_1 = __importDefault(require("zod"));
 const prisma_1 = require("../../../lib/prisma");
+const submission_producer_1 = require("../producers/submission.producer");
 const createSubmission = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
@@ -44,17 +45,32 @@ const createSubmission = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 userId,
                 problemId,
                 language,
-                sourceCode
+                sourceCode,
+                status: "PENDING"
             }
         });
+        console.log("before try of qnqueue");
+        try {
+            console.log("About to enqueue submission:", submission.id);
+            yield (0, submission_producer_1.enqueueSubmission)(submission.id);
+            console.log("Enqueued submission:", submission.id);
+        }
+        catch (err) {
+            console.error("Failed to enqueue submission:", err);
+        }
+        // return res.status(201).json({
+        //     message : "Submission created successfully",
+        //     submission : {
+        //         userId  : submission.userId,
+        //         problemId : submission.problemId,
+        //         language : submission.language,
+        //         sourceCode : submission.sourceCode
+        //     }
+        // })
         return res.status(201).json({
             message: "Submission created successfully",
-            submission: {
-                userId: submission.userId,
-                problemId: submission.problemId,
-                language: submission.language,
-                sourceCode: submission.sourceCode
-            }
+            submissionId: submission.id,
+            status: submission.status,
         });
     }
     catch (err) {
