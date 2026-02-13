@@ -48,7 +48,9 @@ model Submission {
   sourceCode  String
 
   status      SubmissionStatus @default(PENDING)
+  stdout      String?  // Add this field
 
+  stderr      String? 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

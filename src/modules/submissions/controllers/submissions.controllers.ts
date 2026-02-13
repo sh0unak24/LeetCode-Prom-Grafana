@@ -40,11 +40,11 @@ export const createSubmission = async ( req : AuthRequest , res : Response) => {
                 status : "PENDING"
             }
         });
-        //console.log("before try of qnqueue")
+        console.log("before try of qnqueue")
         try {
-            //console.log("About to enqueue submission:", submission.id);
+            console.log("About to enqueue submission:", submission.id);
             await enqueueSubmission(submission.id);
-            //console.log("Enqueued submission:", submission.id);
+            console.log("Enqueued submission:", submission.id);
           } catch (err) {
             console.error("Failed to enqueue submission:", err);
           }

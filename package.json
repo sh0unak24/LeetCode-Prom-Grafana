@@ -13,9 +13,11 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
+    "@types/axios": "^0.14.4",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/ioredis": "^5.0.0",
+    "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.67.3",
     "cookie-parser": "^1.4.7",
